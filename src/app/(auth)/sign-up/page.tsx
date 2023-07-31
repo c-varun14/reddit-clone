@@ -1,4 +1,4 @@
-import Signin from "@/components/Signin";
+import Signup from "@/components/Signup";
 import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
@@ -19,7 +19,7 @@ const page = () => {
           Home
         </Link>
 
-        <Signin />
+        <Signup />
       </div>
     </div>
   );
