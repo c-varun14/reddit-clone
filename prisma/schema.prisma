@@ -97,7 +97,7 @@ model Post {
   author   User   @relation(fields: [authorId], references: [id])
 
   comments Comment[]
-  Vote     Vote[]
+  votes    Vote[]
 }
 
 model Comment {
@@ -107,7 +107,7 @@ model Comment {
   updatedAt DateTime  @updatedAt
   author    User      @relation(fields: [authorId], references: [id])
   authorId  String
-  post      Post      @relation(fields: [postId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   replyTo   Comment?  @relation("ReplyTo", fields: [replyToId], references: [id], onUpdate: NoAction, onDelete: NoAction)
   replyToId String?
@@ -124,7 +124,7 @@ enum VoteType {
 model Vote {
   user   User     @relation(fields: [userId], references: [id])
   userId String
-  post   Post     @relation(fields: [postId], references: [id])
+  post   Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
   type   VoteType
 
@@ -134,7 +134,7 @@ model Vote {
 model CommentVote {
   user      User     @relation(fields: [userId], references: [id])
   userId    String
-  comment   Comment  @relation(fields: [commentId], references: [id])
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
   type      VoteType
 

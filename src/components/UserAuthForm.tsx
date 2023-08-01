@@ -4,13 +4,14 @@ import { FC, useState } from "react";
 import { Button } from "./ui/Button";
 import { cx } from "class-variance-authority";
 import { signIn } from "next-auth/react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Icons } from "./Icons";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const UserAuthForm: FC<UserAuthFormProps> = ({ className, ...props }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const loginWithGoogle = async () => {
     try {

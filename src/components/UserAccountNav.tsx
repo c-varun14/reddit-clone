@@ -11,7 +11,7 @@ import {
 import UserAvatar from "./UserAvatar";
 import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { signOut } from "next-auth/react";
-import { Link } from "lucide-react";
+import Link from "next/link";
 
 interface UserAccountNavProps {
   user: Pick<User, "name" | "email" | "image">;
