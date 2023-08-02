@@ -1,0 +1,1 @@
+export const NO_OF_INFINITE_SCROLL_RESULTS = 2;

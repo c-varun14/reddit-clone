@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { toast } from "./use-toast";
 import { buttonVariants } from "@/components/ui/Button";
@@ -12,8 +10,8 @@ export const useCustomToast = () => {
       variant: "destructive",
       action: (
         <Link
-          href="/sign-in"
           onClick={() => dismiss()}
+          href="/sign-in"
           className={buttonVariants({ variant: "outline" })}
         >
           Sign-in

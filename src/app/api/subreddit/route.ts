@@ -4,8 +4,8 @@ import { createSubredditSchema } from "@/lib/validators/subreddit";
 import { z } from "zod";
 
 export async function POST(req: Request) {
-  const session = await getAuthSession();
   try {
+    const session = await getAuthSession();
     if (!session?.user) {
       return new Response("Not Authenticated", { status: 401 });
     }
