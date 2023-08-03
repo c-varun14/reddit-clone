@@ -33,7 +33,7 @@ const SubscribeLeaveToggle: FC<SubscribeLeaveToggleProps> = ({
     onError: (err) => {
       if (err instanceof AxiosError) {
         if (err.response?.status === 401) return loginToast();
-        else if (err.response?.status === 403)
+        else if (err.response?.status === 400)
           return toast({
             title: err.response.data,
             description: "You cannot leave your own subreddit",

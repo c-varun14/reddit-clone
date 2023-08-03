@@ -16,7 +16,7 @@ export const POST = async (req: Request) => {
       },
     });
     if (subreddit?.creatorId === session.user.id)
-      return new Response("Not possible", { status: 403 });
+      return new Response("Not possible", { status: 400 });
 
     const isSubscribed = await db.subscription.findFirst({
       where: {

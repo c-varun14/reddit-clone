@@ -31,7 +31,7 @@ const Page = () => {
             description: "Please choose a different name for your subreddit",
             variant: "destructive",
           });
-        else if (err.response?.status === 403)
+        else if (err.response?.status === 400)
           return toast({
             title: err.response.data,
             description:
@@ -83,7 +83,7 @@ const Page = () => {
           <Button
             isLoading={isLoading}
             onClick={() => createCommunity()}
-            disabled={input.length < 2}
+            disabled={input.length < 2 || isLoading}
           >
             Create Subreddit
           </Button>

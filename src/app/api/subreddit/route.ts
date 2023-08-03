@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   } catch (err) {
     if (err instanceof z.ZodError)
       return new Response("Enter a correct length of subreddit", {
-        status: 403,
+        status: 400,
       });
     return new Response(
       "Something went wrong! Could not create the subreddit",
