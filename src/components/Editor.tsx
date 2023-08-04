@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type EditorJS from "@editorjs/editorjs";
 import { uploadFiles } from "@/lib/uploadthing";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -35,12 +35,22 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
   const { mutate: createPost, isLoading } = useMutation({
     mutationFn: async (payload: createPostType) => {
       const { data } = await axios.post("/api/subreddit/post/create", payload);
+      console.log(data);
       return data;
     },
-    onError: () => {
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 400)
+          return toast({
+            title: err.response.data,
+            description: `You should be a member of the subreddit to create posts`,
+            variant: "destructive",
+          });
+      }
       toast({
         title: "Internal error",
         description: "Something went wrong! Please try again",
+        variant: "destructive",
       });
     },
     onSuccess: () => {
@@ -135,8 +145,9 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
     }
   });
 
-  const onSubmit = async (e: createPostType) => {
-    const blocks = editorRef.current?.save();
+  async function onSubmit(e: createPostType) {
+    console.log("Submit handler running");
+    const blocks = await editorRef.current?.save();
 
     const payload: createPostType = {
       title: e.title,
@@ -145,7 +156,7 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
     };
 
     createPost(payload);
-  };
+  }
 
   const { ref: titleRef, ...titleRegisterProps } = register("title");
 
@@ -156,17 +167,20 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
         className="w-fit"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <TextAreaAutoResize
-          ref={(e) => {
-            titleRef(e);
-            //@ts-ignore
-            _titleRef.current = e;
-          }}
-          placeholder="Title"
-          className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
-        />
+        <div className="prose prose-stone dark:prose-invert">
+          <TextAreaAutoResize
+            ref={(e) => {
+              titleRef(e);
+              //@ts-ignore
+              _titleRef.current = e;
+            }}
+            {...titleRegisterProps}
+            placeholder="Title"
+            className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus:outline-none"
+          />
+          <div id="editor" className="min-h-[500px]" />
+        </div>
       </form>
-      <div id="editor" className="min-h-[500px] " />
     </div>
   );
 };

@@ -13,15 +13,15 @@ export const POST = async (req: Request) => {
 
     const payload = createPostSchema.parse(body);
 
-    const isSuscribed = await db.subscription.findFirst({
+    const isSubscribed = await db.subscription.findFirst({
       where: {
         subredditId: payload.subredditId,
         userId: session?.user.id,
       },
     });
 
-    if (!isSuscribed)
-      return new Response("You must be subscribed to do this", { status: 400 });
+    if (!isSubscribed)
+      return new Response(`Subscribe to post`, { status: 400 });
 
     await db.post.create({
       data: {
