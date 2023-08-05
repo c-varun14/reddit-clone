@@ -32,10 +32,9 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { mutate: createPost, isLoading } = useMutation({
+  const { mutate: createPost } = useMutation({
     mutationFn: async (payload: createPostType) => {
       const { data } = await axios.post("/api/subreddit/post/create", payload);
-      console.log(data);
       return data;
     },
     onError: (err) => {
@@ -66,7 +65,7 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
   });
 
   const editorRef = useRef<EditorJS>();
-  const _titleRef = useRef<HTMLTextAreaElement>();
+  const _titleRef = useRef<HTMLTextAreaElement>(null);
   const [isMounted, setisMounted] = useState(false);
 
   useEffect(() => {
@@ -129,12 +128,26 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
   }, []);
 
   useEffect(() => {
+    if (Object.keys(errors).length) {
+      for (const [_key, value] of Object.entries(errors)) {
+        value;
+        toast({
+          title: "Something went wrong.",
+          description: (value as { message: string }).message,
+          variant: "destructive",
+        });
+      }
+    }
+  }, [errors]);
+
+  useEffect(() => {
     const init = async () => {
       await initializeEditor();
       setTimeout(() => {
         _titleRef.current?.focus();
       }, 0);
     };
+
     if (isMounted) {
       init();
 
@@ -143,11 +156,16 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
         editorRef.current = undefined;
       };
     }
-  });
+  }, [isMounted, initializeEditor]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   async function onSubmit(e: createPostType) {
-    console.log("Submit handler running");
+    console.log(e);
     const blocks = await editorRef.current?.save();
+    console.log(blocks);
 
     const payload: createPostType = {
       title: e.title,
