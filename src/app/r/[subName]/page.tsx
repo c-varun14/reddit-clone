@@ -26,7 +26,10 @@ const page: FC<pageProps> = async ({ params: { subName } }) => {
           votes: true,
           subreddit: true,
         },
-        take: 10,
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: NO_OF_INFINITE_SCROLL_RESULTS,
       },
     },
   });
