@@ -1,3 +1,5 @@
+"use client";
+
 import { useCustomToast } from "@/hooks/use-custom-toast";
 import { usePrevious } from "@mantine/hooks";
 import { FC, useEffect, useState } from "react";
@@ -32,28 +34,33 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
         voteType,
         postId,
       };
-      await axios.patch("api/subreddit/post/vote", payload);
+      await axios.patch("/api/subreddit/post/vote", payload);
     },
     onError: (err, postType) => {
-      if (postType === "UP") setVotesAmt((prev) => prev - 1);
-      else setVotesAmt((prev) => prev + 1);
+      if (postType === prevVote) {
+        if (postType === "UP") setVotesAmt((prev) => prev + 1);
+        else setVotesAmt((prev) => prev - 1);
+      } else {
+        if (postType === "UP") setVotesAmt((prev) => prev - (prevVote ? 2 : 1));
+        else setVotesAmt((prev) => prev + (prevVote ? 2 : 1));
+      }
 
       setCurrentVote(prevVote);
 
       if (err instanceof AxiosError) {
         if (err.response?.status === 401) return loginToast();
-        return toast({
-          title: "Something went wrong! ",
-          description: "Vote could not be register. Please try again",
-          variant: "destructive",
-        });
       }
+      return toast({
+        title: "Something went wrong! ",
+        description: "Vote could not be register. Please try again",
+        variant: "destructive",
+      });
     },
     onMutate: (voteType: VoteType) => {
       if (voteType === currentVote) {
         setCurrentVote(undefined);
-        if (voteType === "UP") setVotesAmt((prev) => prev + 1);
-        else setVotesAmt((prev) => prev - 1);
+        if (voteType === "UP") setVotesAmt((prev) => prev - 1);
+        else setVotesAmt((prev) => prev + 1);
       } else {
         setCurrentVote(voteType);
         if (voteType === "UP")

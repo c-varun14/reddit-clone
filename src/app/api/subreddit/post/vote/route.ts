@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { redis } from "@/lib/redis";
 import { postVoteSchema } from "@/lib/validators/vote";
 import { CachedPost } from "@/types/redis";
-import { VoteType } from "@prisma/client";
+import { Vote } from "@prisma/client";
 import { z } from "zod";
 
 const NO_OF_UPVOTES_TO_CACHE = 1; //TODO: Change value while deploying
@@ -17,12 +17,6 @@ export const PATCH = async (req: Request) => {
 
     if (!session?.user) return new Response("Unauthorized", { status: 401 });
 
-    const existingVote = await db.vote.findFirst({
-      where: {
-        postId,
-        type: voteType,
-      },
-    });
     const post = await db.post.findFirst({
       where: {
         id: postId,
@@ -33,11 +27,13 @@ export const PATCH = async (req: Request) => {
       },
     });
 
-    let currentVote: VoteType | null = voteType;
-
     if (!post) return new Response("Post not found", { status: 404 });
-    //for indentation
-    else if (existingVote) {
+
+    const existingVote: Vote | undefined = post.votes.find(
+      (vote) => vote.postId === postId && vote.userId === session.user.id
+    );
+
+    if (existingVote) {
       if (existingVote.type === voteType) {
         await db.vote.delete({
           where: {
@@ -47,7 +43,6 @@ export const PATCH = async (req: Request) => {
             },
           },
         });
-        currentVote = null;
       } else
         await db.vote.update({
           where: {
@@ -83,7 +78,6 @@ export const PATCH = async (req: Request) => {
         authorUsername: post.author.username ?? "",
         content: JSON.stringify(post.content),
         createdAt: post.createdAt,
-        currentVote,
         title: post.title,
         id: post.id,
       };

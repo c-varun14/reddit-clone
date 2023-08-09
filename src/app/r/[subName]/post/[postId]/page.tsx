@@ -1,4 +1,5 @@
 // import CommentsSection from '@/components/CommentsSection'
+import CommentSection from "@/components/CommentSection";
 import EditorOutput from "@/components/EditorOutput";
 import PostVoteServer from "@/components/post-vote/PostVoteServer";
 import { buttonVariants } from "@/components/ui/Button";
@@ -36,7 +37,7 @@ const page = async ({ params: { postId } }: PageProps) => {
     });
   }
 
-  if (!cachedPost || !post) return notFound();
+  if (!cachedPost && !post) return notFound();
 
   return (
     <div>
@@ -67,6 +68,15 @@ const page = async ({ params: { postId } }: PageProps) => {
           </h1>
 
           <EditorOutput content={post?.content ?? cachedPost.content} />
+
+          <Suspense
+            fallback={
+              <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
+            }
+          >
+            {/* @ts-expect-error Server Component */}
+            <CommentSection postId={post?.id ?? cachedPost.id} />
+          </Suspense>
         </div>
       </div>
     </div>
