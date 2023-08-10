@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { FC } from "react";
 import CustomImageRenderer from "./renderers/CustomImageRenderer";
 import CustomCodeRenderer from "./renderers/CustomCodeRenderer";
 
@@ -26,7 +25,7 @@ const renderers = {
   code: CustomCodeRenderer,
 };
 
-const EditorOutput: FC<EditorOutputProps> = ({ content }) => {
+const EditorOutput = ({ content }: EditorOutputProps) => {
   return (
     <Output
       className=" text-sm"
