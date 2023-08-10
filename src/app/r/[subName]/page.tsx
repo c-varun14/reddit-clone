@@ -40,7 +40,14 @@ const page: FC<pageProps> = async ({ params: { subName } }) => {
         r/{subreddit.name}
       </h1>
       <MiniCreatePost session={session} />
-      <PostFeed initialPosts={subreddit.posts} subredditName={subreddit.name} />
+      {subreddit.posts ? (
+        <PostFeed
+          initialPosts={subreddit.posts}
+          subredditName={subreddit.name}
+        />
+      ) : (
+        <p>There are no Posts</p>
+      )}
     </>
   );
 };

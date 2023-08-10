@@ -28,7 +28,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
   const [currentVote, setCurrentVote] = useState(initialVote);
   const prevVote = usePrevious(currentVote);
 
-  const { mutate: vote } = useMutation({
+  const { mutate: vote, isLoading } = useMutation({
     mutationFn: async (voteType: VoteType) => {
       const payload: postVoteValidator = {
         voteType,
@@ -78,6 +78,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
     <div className="flex flex-col gap-4 sm:gap-0 pr-6 sm:w-20 pb-4 sm:pb-0">
       {/* Upvote */}
       <Button
+        disabled={isLoading}
         onClick={() => vote("UP")}
         size="sm"
         variant="ghost"
@@ -97,6 +98,7 @@ const PostVoteClient: FC<PostVoteClientProps> = ({
 
       {/* downvote */}
       <Button
+        disabled={isLoading}
         onClick={() => vote("DOWN")}
         size="sm"
         className={cn({

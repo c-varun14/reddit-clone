@@ -5,7 +5,6 @@ import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { Button } from "@/components/ui/Button";
 import {
@@ -72,6 +71,7 @@ const UserNameForm: React.FC<UserNameFormProps> = ({
       toast({
         description: "Your username has been updated.",
       });
+      router.push("/");
       router.refresh();
     },
   });

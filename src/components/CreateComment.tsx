@@ -6,9 +6,9 @@ import { CommentRequest } from "../lib/validators/comment";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { Label } from "@radix-ui/react-dropdown-menu";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/Button";
+import { Label } from "./ui/label";
 
 interface CreateCommentProps {
   postId: string;
@@ -18,6 +18,7 @@ interface CreateCommentProps {
 const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
   const [input, setInput] = useState("");
   const router = useRouter();
+
   const { isLoading, mutate: createComment } = useMutation({
     mutationFn: async (payload: CommentRequest) => {
       const { data } = await axios.patch(
@@ -43,13 +44,6 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
       <Label htmlFor="comment">Your comment</Label>
       <div className="mt-2">
         <Textarea
-          onFocus={(e) =>
-            e.currentTarget.setSelectionRange(
-              e.currentTarget.value.length,
-              e.currentTarget.value.length
-            )
-          }
-          autoFocus
           id="comment"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -57,24 +51,11 @@ const CreateComment: FC<CreateCommentProps> = ({ postId, replyToId }) => {
           placeholder="What are your thoughts?"
         />
 
-        <div className="mt-2 flex justify-end gap-2">
-          {/* <Button
-        tabIndex={-1}
-        variant='subtle'
-        onClick={() => setIsReplying(false)}>
-        Cancel
-      </Button> */}
+        <div className="mt-2 flex justify-end">
           <Button
             isLoading={isLoading}
             disabled={input.length === 0}
-            onClick={() => {
-              if (!input) return;
-              createComment({
-                postId,
-                text: input,
-                replyToId,
-              });
-            }}
+            onClick={() => createComment({ postId, text: input, replyToId })}
           >
             Post
           </Button>

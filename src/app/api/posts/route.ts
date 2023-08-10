@@ -3,27 +3,11 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 
 export const GET = async (req: Request) => {
-  const url = new URL(req.url);
-
-  const session = await getAuthSession();
-
-  let followedCommunitiesIds: string[] = [];
-
-  if (session?.user) {
-    const followedCommunities = await db.subscription.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
-        subreddit: true,
-      },
-    });
-
-    followedCommunitiesIds = followedCommunities.map(
-      ({ subreddit }) => subreddit.id
-    );
-  }
   try {
+    const url = new URL(req.url);
+
+    const session = await getAuthSession();
+
     const { limit, page, subredditName } = z
       .object({
         limit: z.string(),
@@ -38,13 +22,43 @@ export const GET = async (req: Request) => {
 
     let whereClause = {};
 
-    if (subredditName) {
+    if (!subredditName && !session?.user) {
+      const posts = await db.post.findMany({
+        skip: (parseInt(page) - 1) * parseInt(limit), // skip should start from 0 for page 1
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          votes: true,
+          author: true,
+          comments: true,
+          subreddit: true,
+        },
+        take: parseInt(limit),
+      });
+      return new Response(JSON.stringify(posts));
+    } else if (subredditName) {
       whereClause = {
         subreddit: {
           name: subredditName,
         },
       };
-    } else if (session) {
+    } else if (session?.user) {
+      let followedCommunitiesIds: string[] = [];
+
+      const followedCommunities = await db.subscription.findMany({
+        where: {
+          userId: session.user.id,
+        },
+        include: {
+          subreddit: true,
+        },
+      });
+
+      followedCommunitiesIds = followedCommunities.map(
+        ({ subreddit }) => subreddit.id
+      );
+
       whereClause = {
         subreddit: {
           id: {
@@ -56,7 +70,7 @@ export const GET = async (req: Request) => {
 
     const posts = await db.post.findMany({
       take: parseInt(limit),
-      skip: (parseInt(page) - 1) * parseInt(limit), // skip should start from 0 for page 1
+      skip: (parseInt(page) - 1) * parseInt(limit),
       orderBy: {
         createdAt: "desc",
       },

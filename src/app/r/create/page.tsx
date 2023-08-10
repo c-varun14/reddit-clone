@@ -44,7 +44,14 @@ const Page = () => {
           title: "Internal error",
           description: "Something went worng! Could not create subreddit",
         });
+        router.push(`/r/${input}`);
       }
+    },
+    onSuccess: () => {
+      toast({
+        title: "Community Created",
+        description: "You can start with creating posts in your community",
+      });
     },
   });
   return (
@@ -66,6 +73,7 @@ const Page = () => {
               r/
             </p>
             <Input
+              disabled={isLoading}
               value={input}
               onChange={(e) => setinput(e.target.value)}
               className="pl-6"

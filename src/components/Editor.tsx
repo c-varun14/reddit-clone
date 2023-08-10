@@ -163,9 +163,7 @@ const Editor: FC<EditorProps> = ({ subredditId }) => {
   }
 
   async function onSubmit(e: createPostType) {
-    console.log(e);
     const blocks = await editorRef.current?.save();
-    console.log(blocks);
 
     const payload: createPostType = {
       title: e.title,

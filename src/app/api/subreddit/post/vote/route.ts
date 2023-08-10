@@ -6,7 +6,7 @@ import { CachedPost } from "@/types/redis";
 import { Vote } from "@prisma/client";
 import { z } from "zod";
 
-const NO_OF_UPVOTES_TO_CACHE = 1; //TODO: Change value while deploying
+const NO_OF_UPVOTES_TO_CACHE = 3;
 
 export const PATCH = async (req: Request) => {
   try {
